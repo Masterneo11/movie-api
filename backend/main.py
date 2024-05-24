@@ -41,16 +41,17 @@ async def create_movie(new_movie: CreateMovieRequest) -> CreateMovieResponse:
     movies.append(new_movid)
     return CreateMovieResponse(id=movie_id)
 
-@app.put("/movies/{movie_id}")
+@app.put("/movies/{movie_id}", response_model=UpdateMovieResponse)
 async def update_movie(movie_id: uuid.UUID, updated_movie: UpdateMovieRequest) -> UpdateMovieResponse:
-    for i, movie in enumerate(movies):
+    for movie in movies:
         if movie.movie_id == movie_id:
-            movies[i] = Movie(**updated_movie.dict(), movie_id=movie_id)
-        return UpdateMovieResponse(success=True)
+            movie.name = updated_movie.name
+            movie.year = updated_movie.year
+            return UpdateMovieResponse(success=True)
 
 @app.delete("/movies/{movie_id}")
 async def delete_movie(movie_id: uuid.UUID) -> DeleteMovieResponse:
     for i, movie in enumerate(movies):
         if movie.movie_id == movie_id:
             movies.pop(i)
-        return DeleteMovieResponse(success=True)
+    return DeleteMovieResponse(success=True)
